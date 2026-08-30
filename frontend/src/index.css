@@ -1567,19 +1567,30 @@ select {
   }
 }
 
-/* below the dock width: the side button hides (the rail keeps the price),
-   and the chatter behaves as an on-demand drawer over the wall */
+/* keep the takeover CTA visible on smaller screens while the chatter remains an on-demand drawer */
 @media (max-width: 1279px) {
-  .side-take,
-  .side-take--pending {
-    display: none;
-  }
   .chatter {
     z-index: 40;
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 700px) {
+  .side-take,
+  .side-take--pending {
+    position: static;
+    transform: none;
+    width: auto;
+    margin: var(--s4) var(--s3) 0;
+    left: auto;
+    top: auto;
+  }
+
+  .side-take:hover,
+  .side-take:active,
+  .side-take:focus-visible {
+    transform: translate(-1px, -1px) rotate(-1deg);
+  }
+
   .chatter {
     top: 0;
     bottom: 0;
