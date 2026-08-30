@@ -23,6 +23,7 @@ load_dotenv(ROOT / ".env")
 from core import ai, og, payments, mailer, wall  # noqa: E402
 from core.db import get_db  # noqa: E402
 from core.money import fmt, currency_for_country, usd_to_paise, paise_per_usd  # noqa: E402
+import games  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
 log = logging.getLogger("billboard")
@@ -590,6 +591,20 @@ async def admin_revert(x_admin_password: str | None = Header(default=None)):
     return res
 
 
+@api.post("/admin/reset-price")
+async def admin_reset_price(x_admin_password: str | None = Header(default=None)):
+    """Reset only the next takeover price; poster history and paid amounts stay intact."""
+    require_admin(x_admin_password)
+    db = get_db()
+    s = await wall.get_settings(db)
+    start = int(s["start_price_paise"])
+    await db.settings.update_one(
+        {"_id": wall.SETTINGS_ID},
+        {"$set": {"next_price_override_paise": start}},
+    )
+    return {"ok": True, "next_paise": start, "next_label": fmt(start, "USD")}
+
+
 @api.post("/admin/message/{mid}/delete")
 async def admin_delete(mid: str, x_admin_password: str | None = Header(default=None)):
     require_admin(x_admin_password)
@@ -703,6 +718,7 @@ async def health():
 
 
 app.include_router(api)
+app.include_router(games.router)
 
 
 # --------------------------------------------------------------- boot
@@ -760,6 +776,7 @@ async def startup():
     await db.pending.create_index("id")
     await db.pending.create_index("razorpay_order_id")
     await db.chat.create_index("created_at")
+    await games.create_indexes(db)
     asyncio.create_task(seed_wall())
     asyncio.create_task(expiry_loop())
     log.info("the wall is up")

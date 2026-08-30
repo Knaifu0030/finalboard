@@ -15,6 +15,9 @@ export const Notice = ({ takeovers, totalLabel }) => (
       <span className="notice__meta">One wall. One message.</span>
     )}
     <span className="notice__links">
+      <Link to="/sponsor" data-testid="nav-sponsor">
+        Sponsor a fight
+      </Link>
       <Link to="/fallen" data-testid="nav-fallen">
         Hall of the Fallen
       </Link>
