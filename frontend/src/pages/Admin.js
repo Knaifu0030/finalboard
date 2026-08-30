@@ -158,7 +158,21 @@ export default function Admin() {
           >
             Set countdown (hours from now)
           </button>
+          <button
+            className="btn btn--sm btn--ghost"
+            onClick={() => {
+              if (window.confirm(`Reset the next takeover to ${s?.price?.start_label}? Existing posters and their paid amounts will stay unchanged.`)) {
+                act("/admin/reset-price", {}, `Next takeover reset to ${s?.price?.start_label}. Poster history was kept.`);
+              }
+            }}
+            data-testid="admin-reset-price"
+          >
+            Reset next price to {s?.price?.start_label}
+          </button>
         </div>
+        <p className="admin__note">
+          This changes only the next takeover price. After someone takes the wall, the normal price ladder resumes.
+        </p>
 
         <h2>Pending</h2>
         {!state?.pending?.length ? (

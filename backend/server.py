@@ -591,6 +591,20 @@ async def admin_revert(x_admin_password: str | None = Header(default=None)):
     return res
 
 
+@api.post("/admin/reset-price")
+async def admin_reset_price(x_admin_password: str | None = Header(default=None)):
+    """Reset only the next takeover price; poster history and paid amounts stay intact."""
+    require_admin(x_admin_password)
+    db = get_db()
+    s = await wall.get_settings(db)
+    start = int(s["start_price_paise"])
+    await db.settings.update_one(
+        {"_id": wall.SETTINGS_ID},
+        {"$set": {"next_price_override_paise": start}},
+    )
+    return {"ok": True, "next_paise": start, "next_label": fmt(start, "USD")}
+
+
 @api.post("/admin/message/{mid}/delete")
 async def admin_delete(mid: str, x_admin_password: str | None = Header(default=None)):
     require_admin(x_admin_password)

@@ -36,6 +36,7 @@ DEFAULT_SETTINGS = {
     "paused": True,
     "current_message_id": None,
     "current_amount_paise": 0,
+    "next_price_override_paise": None,
     "seq": 0,
 }
 
@@ -66,6 +67,8 @@ async def current_message(db):
 
 
 def min_next_paise(settings, current):
+    if settings.get("next_price_override_paise") is not None:
+        return int(settings["next_price_override_paise"])
     if not current:
         return int(settings["start_price_paise"])
     return int(current["amount_paise"]) + int(settings["min_bump_paise"])
@@ -152,8 +155,10 @@ async def execute_takeover(db, *, text, name, email, image_url, amount_paise,
     guard = await db.settings.find_one_and_update(
         {"_id": SETTINGS_ID,
          "current_message_id": current["id"] if current else None,
-         "current_amount_paise": int(current["amount_paise"]) if current else s.get("current_amount_paise", 0)},
+         "current_amount_paise": int(current["amount_paise"]) if current else s.get("current_amount_paise", 0),
+         "next_price_override_paise": s.get("next_price_override_paise")},
         {"$set": {"current_message_id": new_id, "current_amount_paise": int(amount_paise)},
+         "$unset": {"next_price_override_paise": ""},
          "$inc": {"seq": 1}},
         return_document=True,
     )
