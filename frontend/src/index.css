@@ -1120,7 +1120,7 @@ select {
 /* --------------------------------------------------- prominent side takeover */
 .side-take,
 .side-take--pending {
-  position: fixed;
+  position: absolute;
   left: var(--s5);
   top: 50%;
   transform: translateY(-50%) rotate(-2deg);
