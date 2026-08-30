@@ -22,6 +22,9 @@ export const Chatter = () => {
   const logRef = useRef(null);
   const stick = useRef(true);
 
+  const atBottom = (el) =>
+    !el || el.scrollHeight - el.scrollTop - el.clientHeight <= 32;
+
   const load = useCallback(async () => {
     try {
       const d = await getChat();
@@ -39,13 +42,17 @@ export const Chatter = () => {
 
   useEffect(() => {
     const el = logRef.current;
-    if (el && stick.current) el.scrollTop = el.scrollHeight;
+    if (!el) return;
+
+    if (stick.current || msgs.length === 0) {
+      el.scrollTop = el.scrollHeight;
+    }
   }, [msgs, open]);
 
   const onScroll = () => {
     const el = logRef.current;
     if (!el) return;
-    stick.current = el.scrollHeight - el.scrollTop - el.clientHeight < 40;
+    stick.current = atBottom(el);
   };
 
   const submit = async (e) => {
