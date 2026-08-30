@@ -111,6 +111,7 @@ export default function Admin() {
       <Notice />
       <div className="page page--wide admin" data-testid="admin-console">
         <h1 className="page__title">Keeper</h1>
+        <p><Link to="/admin/games">Open the sponsored games desk →</Link></p>
         <p className="page__sub">
           {`${s?.takeovers} takeovers \u00b7 ${s?.total_paid_label} pasted \u00b7 clock ${
             clock?.paused ? "not started" : s?.frozen ? "frozen" : "running"

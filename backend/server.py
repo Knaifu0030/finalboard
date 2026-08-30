@@ -23,6 +23,7 @@ load_dotenv(ROOT / ".env")
 from core import ai, og, payments, mailer, wall  # noqa: E402
 from core.db import get_db  # noqa: E402
 from core.money import fmt, currency_for_country, usd_to_paise, paise_per_usd  # noqa: E402
+import games  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
 log = logging.getLogger("billboard")
@@ -703,6 +704,7 @@ async def health():
 
 
 app.include_router(api)
+app.include_router(games.router)
 
 
 # --------------------------------------------------------------- boot
@@ -760,6 +762,7 @@ async def startup():
     await db.pending.create_index("id")
     await db.pending.create_index("razorpay_order_id")
     await db.chat.create_index("created_at")
+    await games.create_indexes(db)
     asyncio.create_task(seed_wall())
     asyncio.create_task(expiry_loop())
     log.info("the wall is up")
