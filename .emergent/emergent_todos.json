@@ -1,0 +1,46 @@
+[
+  {
+    "content": "Get Razorpay integration playbook",
+    "status": "completed"
+  },
+  {
+    "content": "Get Anthropic (Emergent LLM key) playbook",
+    "status": "completed"
+  },
+  {
+    "content": "Phase 1: Write /app/test_core.py covering Razorpay order+verify, moderation, AI voice JSON, OG card render, atomic price ladder",
+    "status": "completed"
+  },
+  {
+    "content": "Phase 1: Run POC and fix until all green + og_test.png correct (64/64)",
+    "status": "completed"
+  },
+  {
+    "content": "Phase 2: design_agent fly-poster implementation blueprint",
+    "status": "completed"
+  },
+  {
+    "content": "Phase 2: Backend implementation (wall state, geo currency, takeover/pending/webhook, OG endpoint, admin, freeze, seed)",
+    "status": "completed"
+  },
+  {
+    "content": "Phase 2: Frontend implementation (/, /take, /m/:id, /fallen, /admin) with paste-up + stamp + transition",
+    "status": "completed"
+  },
+  {
+    "content": "Phase 2: All user stories covered in development",
+    "status": "completed"
+  },
+  {
+    "content": "Phase 2: End to End Testing using Testing Agent",
+    "status": "in_progress"
+  },
+  {
+    "content": "Phase 2: Fix all issues found by testing agent",
+    "status": "pending"
+  },
+  {
+    "content": "Phase 2: Reset DB and re-seed the clean 3-poster launch fight",
+    "status": "pending"
+  }
+]

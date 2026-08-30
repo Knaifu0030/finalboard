@@ -1,0 +1,1118 @@
+/* THE LAST BILLBOARD
+   A wall people paste posters on. Nothing here that wouldn't exist in that world.
+   No gradients. No noise. No rounded corners. One shadow, under the top poster only.
+   Fonts are self-hosted from the exact same files the server-side OG renderer uses,
+   so the share card and the live wall are the same object. */
+
+@font-face {
+  font-family: "Archivo Black";
+  src: url("./fonts/ArchivoBlack-Regular.ttf") format("truetype");
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("./fonts/JetBrainsMono-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("./fonts/JetBrainsMono-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("./fonts/JetBrainsMono-Italic.ttf") format("truetype");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+:root {
+  --paper: #f3e7d3;
+  --ink-black: #141414;
+  --ink-tomato: #e63f1e;
+  --ink-mustard: #f0b429;
+  --ink-teal: #1e6e78;
+
+  --font-display: "Archivo Black", Impact, "Haettenschweiler", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --mono: 13px;
+  --mono-sm: 12px;
+  --mono-xs: 11px;
+
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 24px;
+  --s6: 32px;
+  --s7: 48px;
+
+  --rail-h: 56px;
+  --poster-shadow: 6px 6px 0 var(--ink-black);
+  --misreg-x: 2px;
+  --misreg-y: 1px;
+
+  --tear-a: polygon(0.00% 0.27%, 6.67% 0.63%, 13.33% 0.43%, 20.00% 0.69%, 26.67% 0.72%, 33.33% 0.08%, 40.00% 0.02%, 46.67% 0.96%, 53.33% 0.30%, 60.00% 0.27%, 66.67% 1.14%, 73.33% 0.54%, 80.00% 0.96%, 86.67% 0.55%, 93.33% 0.73%, 100.00% 0.17%, 99.60% 6.67%, 99.45% 13.33%, 99.67% 20.00%, 99.53% 26.67%, 99.58% 33.33%, 99.96% 40.00%, 99.52% 46.67%, 99.63% 53.33%, 99.81% 60.00%, 99.98% 66.67%, 99.45% 73.33%, 99.70% 80.00%, 99.55% 86.67%, 99.44% 93.33%, 99.55% 100.00%, 93.33% 98.94%, 86.67% 99.55%, 80.00% 99.08%, 73.33% 99.49%, 66.67% 98.92%, 60.00% 98.99%, 53.33% 99.89%, 46.67% 99.84%, 40.00% 99.75%, 33.33% 98.89%, 26.67% 99.50%, 20.00% 99.28%, 13.33% 99.65%, 6.67% 99.42%, 0.00% 99.56%, 0.22% 93.33%, 0.37% 86.67%, 0.37% 80.00%, 0.57% 73.33%, 0.43% 66.67%, 0.59% 60.00%, 0.54% 53.33%, 0.63% 46.67%, 0.42% 40.00%, 0.10% 33.33%, 0.54% 26.67%, 0.61% 20.00%, 0.57% 13.33%, 0.36% 6.67%);
+  --tear-b: polygon(0.00% 0.52%, 6.67% 0.64%, 13.33% 1.06%, 20.00% 0.54%, 26.67% 0.58%, 33.33% 0.68%, 40.00% 0.21%, 46.67% 0.59%, 53.33% 0.72%, 60.00% 0.91%, 66.67% 0.11%, 73.33% 0.35%, 80.00% 0.10%, 86.67% 0.93%, 93.33% 0.80%, 100.00% 0.05%, 99.38% 6.67%, 99.39% 13.33%, 99.59% 20.00%, 99.61% 26.67%, 99.90% 33.33%, 99.99% 40.00%, 99.67% 46.67%, 99.96% 53.33%, 99.88% 60.00%, 99.85% 66.67%, 99.98% 73.33%, 99.71% 80.00%, 99.72% 86.67%, 99.47% 93.33%, 99.67% 100.00%, 93.33% 99.26%, 86.67% 99.43%, 80.00% 99.24%, 73.33% 99.47%, 66.67% 99.68%, 60.00% 98.85%, 53.33% 98.85%, 46.67% 99.03%, 40.00% 99.19%, 33.33% 99.64%, 26.67% 99.74%, 20.00% 99.67%, 13.33% 99.92%, 6.67% 99.12%, 0.00% 99.54%, 0.54% 93.33%, 0.24% 86.67%, 0.61% 80.00%, 0.54% 73.33%, 0.00% 66.67%, 0.13% 60.00%, 0.58% 53.33%, 0.30% 46.67%, 0.62% 40.00%, 0.25% 33.33%, 0.05% 26.67%, 0.40% 20.00%, 0.49% 13.33%, 0.17% 6.67%);
+  --tear-c: polygon(0.00% 0.63%, 6.67% 0.40%, 13.33% 0.97%, 20.00% 0.33%, 26.67% 0.59%, 33.33% 0.40%, 40.00% 0.48%, 46.67% 1.12%, 53.33% 0.12%, 60.00% 0.51%, 66.67% 0.26%, 73.33% 0.40%, 80.00% 1.15%, 86.67% 0.38%, 93.33% 0.70%, 100.00% 0.48%, 99.54% 6.67%, 99.72% 13.33%, 99.89% 20.00%, 99.73% 26.67%, 99.74% 33.33%, 99.50% 40.00%, 99.64% 46.67%, 99.88% 53.33%, 99.57% 60.00%, 99.81% 66.67%, 99.68% 73.33%, 99.86% 80.00%, 99.74% 86.67%, 99.50% 93.33%, 99.67% 100.00%, 93.33% 99.13%, 86.67% 99.13%, 80.00% 99.32%, 73.33% 99.26%, 66.67% 99.54%, 60.00% 99.29%, 53.33% 99.11%, 46.67% 99.89%, 40.00% 98.92%, 33.33% 99.58%, 26.67% 99.84%, 20.00% 99.83%, 13.33% 99.61%, 6.67% 99.92%, 0.00% 99.54%, 0.26% 93.33%, 0.41% 86.67%, 0.30% 80.00%, 0.59% 73.33%, 0.42% 66.67%, 0.20% 60.00%, 0.55% 53.33%, 0.44% 46.67%, 0.61% 40.00%, 0.46% 33.33%, 0.61% 26.67%, 0.13% 20.00%, 0.18% 13.33%, 0.61% 6.67%);
+  --tear-d: polygon(0.00% 0.40%, 6.67% 0.49%, 13.33% 0.52%, 20.00% 0.39%, 26.67% 0.59%, 33.33% 0.45%, 40.00% 0.05%, 46.67% 0.48%, 53.33% 0.03%, 60.00% 0.12%, 66.67% 0.30%, 73.33% 1.11%, 80.00% 0.55%, 86.67% 0.63%, 93.33% 1.06%, 100.00% 1.03%, 99.64% 6.67%, 99.85% 13.33%, 99.67% 20.00%, 99.77% 26.67%, 99.39% 33.33%, 99.98% 40.00%, 99.76% 46.67%, 99.57% 53.33%, 99.62% 60.00%, 99.65% 66.67%, 99.52% 73.33%, 99.85% 80.00%, 99.47% 86.67%, 99.42% 93.33%, 99.98% 100.00%, 93.33% 99.62%, 86.67% 99.58%, 80.00% 99.56%, 73.33% 99.38%, 66.67% 99.71%, 60.00% 99.25%, 53.33% 98.99%, 46.67% 98.93%, 40.00% 99.03%, 33.33% 99.75%, 26.67% 99.14%, 20.00% 99.11%, 13.33% 99.30%, 6.67% 99.22%, 0.00% 99.67%, 0.49% 93.33%, 0.15% 86.67%, 0.35% 80.00%, 0.17% 73.33%, 0.34% 66.67%, 0.03% 60.00%, 0.20% 53.33%, 0.49% 46.67%, 0.16% 40.00%, 0.46% 33.33%, 0.51% 26.67%, 0.38% 20.00%, 0.40% 13.33%, 0.13% 6.67%);
+
+  --tear-f1: polygon(0.00% 0.29%, 6.67% 0.10%, 13.33% 0.48%, 20.00% 0.46%, 26.67% 0.23%, 33.33% 0.33%, 40.00% 0.11%, 46.67% 0.11%, 53.33% 0.14%, 60.00% 0.35%, 66.67% 0.11%, 73.33% 0.49%, 80.00% 0.04%, 86.67% 0.10%, 93.33% 0.04%, 100.00% 0.38%, 99.90% 6.67%, 99.87% 13.33%, 99.91% 20.00%, 99.82% 26.67%, 99.89% 33.33%, 99.94% 40.00%, 99.88% 46.67%, 99.92% 53.33%, 99.97% 60.00%, 99.77% 66.67%, 99.81% 73.33%, 99.82% 80.00%, 99.76% 86.67%, 99.89% 93.33%, 99.90% 100.00%, 93.33% 99.79%, 86.67% 99.80%, 80.00% 99.67%, 73.33% 100.00%, 66.67% 99.77%, 60.00% 99.73%, 53.33% 99.83%, 46.67% 99.99%, 40.00% 99.65%, 33.33% 100.00%, 26.67% 99.72%, 20.00% 99.92%, 13.33% 99.98%, 6.67% 99.91%, 0.00% 99.97%, 0.04% 93.33%, 0.19% 86.67%, 0.20% 80.00%, 0.10% 73.33%, 0.18% 66.67%, 0.13% 60.00%, 0.14% 53.33%, 0.24% 46.67%, 0.09% 40.00%, 0.24% 33.33%, 0.19% 26.67%, 0.19% 20.00%, 0.00% 13.33%, 0.02% 6.67%);
+  --tear-f2: polygon(0.00% 0.96%, 6.67% 0.32%, 13.33% 1.59%, 20.00% 1.52%, 26.67% 0.77%, 33.33% 1.09%, 40.00% 0.35%, 46.67% 0.37%, 53.33% 0.48%, 60.00% 1.14%, 66.67% 0.35%, 73.33% 1.60%, 80.00% 0.12%, 86.67% 0.32%, 93.33% 0.15%, 100.00% 1.27%, 99.67% 6.67%, 99.57% 13.33%, 99.70% 20.00%, 99.42% 26.67%, 99.63% 33.33%, 99.81% 40.00%, 99.61% 46.67%, 99.72% 53.33%, 99.90% 60.00%, 99.25% 66.67%, 99.38% 73.33%, 99.40% 80.00%, 99.20% 86.67%, 99.64% 93.33%, 99.66% 100.00%, 93.33% 99.30%, 86.67% 99.33%, 80.00% 98.90%, 73.33% 99.99%, 66.67% 99.23%, 60.00% 99.12%, 53.33% 99.43%, 46.67% 99.96%, 40.00% 98.84%, 33.33% 99.98%, 26.67% 99.07%, 20.00% 99.75%, 13.33% 99.94%, 6.67% 99.70%, 0.00% 99.89%, 0.14% 93.33%, 0.62% 86.67%, 0.66% 80.00%, 0.33% 73.33%, 0.59% 66.67%, 0.43% 60.00%, 0.45% 53.33%, 0.79% 46.67%, 0.28% 40.00%, 0.79% 33.33%, 0.63% 26.67%, 0.62% 20.00%, 0.01% 13.33%, 0.08% 6.67%);
+  --tear-f3: polygon(0.00% 1.63%, 6.67% 0.55%, 13.33% 2.70%, 20.00% 2.59%, 26.67% 1.31%, 33.33% 1.86%, 40.00% 0.60%, 46.67% 0.62%, 53.33% 0.81%, 60.00% 1.94%, 66.67% 0.59%, 73.33% 2.72%, 80.00% 0.20%, 86.67% 0.54%, 93.33% 0.25%, 100.00% 2.16%, 99.44% 6.67%, 99.27% 13.33%, 99.50% 20.00%, 99.02% 26.67%, 99.38% 33.33%, 99.68% 40.00%, 99.34% 46.67%, 99.53% 53.33%, 99.83% 60.00%, 98.73% 66.67%, 98.95% 73.33%, 98.98% 80.00%, 98.64% 86.67%, 99.39% 93.33%, 99.42% 100.00%, 93.33% 98.82%, 86.67% 98.87%, 80.00% 98.13%, 73.33% 99.98%, 66.67% 98.70%, 60.00% 98.50%, 53.33% 99.03%, 46.67% 99.94%, 40.00% 98.03%, 33.33% 99.97%, 26.67% 98.42%, 20.00% 99.57%, 13.33% 99.90%, 6.67% 99.49%, 0.00% 99.82%, 0.23% 93.33%, 1.05% 86.67%, 1.12% 80.00%, 0.56% 73.33%, 1.00% 66.67%, 0.73% 60.00%, 0.77% 53.33%, 1.35% 46.67%, 0.48% 40.00%, 1.34% 33.33%, 1.06% 26.67%, 1.05% 20.00%, 0.01% 13.33%, 0.13% 6.67%);
+  --tear-f4: polygon(0.00% 2.30%, 6.67% 0.77%, 13.33% 3.81%, 20.00% 3.65%, 26.67% 1.85%, 33.33% 2.62%, 40.00% 0.85%, 46.67% 0.88%, 53.33% 1.14%, 60.00% 2.74%, 66.67% 0.84%, 73.33% 3.84%, 80.00% 0.28%, 86.67% 0.76%, 93.33% 0.35%, 100.00% 3.04%, 99.20% 6.67%, 98.98% 13.33%, 99.29% 20.00%, 98.62% 26.67%, 99.12% 33.33%, 99.55% 40.00%, 99.07% 46.67%, 99.34% 53.33%, 99.76% 60.00%, 98.21% 66.67%, 98.52% 73.33%, 98.56% 80.00%, 98.08% 86.67%, 99.14% 93.33%, 99.18% 100.00%, 93.33% 98.33%, 86.67% 98.40%, 80.00% 97.36%, 73.33% 99.97%, 66.67% 98.17%, 60.00% 97.89%, 53.33% 98.64%, 46.67% 99.91%, 40.00% 97.22%, 33.33% 99.96%, 26.67% 97.77%, 20.00% 99.39%, 13.33% 99.86%, 6.67% 99.29%, 0.00% 99.74%, 0.33% 93.33%, 1.49% 86.67%, 1.58% 80.00%, 0.79% 73.33%, 1.42% 66.67%, 1.03% 60.00%, 1.08% 53.33%, 1.90% 46.67%, 0.68% 40.00%, 1.89% 33.33%, 1.50% 26.67%, 1.48% 20.00%, 0.01% 13.33%, 0.18% 6.67%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--paper);
+  color: var(--ink-black);
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-family: var(--font-mono);
+  font-size: var(--mono);
+  line-height: 1.3;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--ink-black);
+  color: var(--paper);
+}
+
+a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+a:hover,
+a:focus-visible {
+  text-decoration-thickness: 2px;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  border-radius: 0;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: default;
+}
+
+input,
+textarea,
+select {
+  border-radius: 0;
+  font-family: var(--font-mono);
+}
+
+:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.mono-caps {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* ------------------------------------------------ the hoarding notice (top) */
+.notice {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s3);
+  padding: var(--s3) var(--s4);
+  border-bottom: 2px solid var(--ink-black);
+  font-size: var(--mono-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.notice__title {
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.notice__links {
+  display: flex;
+  gap: var(--s4);
+}
+
+.notice__meta {
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  text-transform: none;
+}
+
+@media (max-width: 640px) {
+  .notice__meta {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------------------ posters */
+.poster {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 19 / 10;
+  border: 2px solid var(--ink-black);
+  background: var(--paper);
+  transform: rotate(var(--rot, 0deg));
+  transform-origin: 50% 50%;
+  overflow: hidden;
+}
+
+.poster--top {
+  box-shadow: var(--poster-shadow);
+}
+
+.poster__ink {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* Exactly one plate is misregistered: the ink one. On an ink-ground poster that is
+   the background; on a black-ground poster the ink is the type. */
+.poster--ink-bg .poster__ink {
+  transform: translate(var(--misreg-x), var(--misreg-y));
+}
+
+.poster--ink-bg.poster--tomato .poster__ink {
+  background: var(--ink-tomato);
+}
+.poster--ink-bg.poster--mustard .poster__ink {
+  background: var(--ink-mustard);
+}
+.poster--ink-bg.poster--teal .poster__ink {
+  background: var(--ink-teal);
+}
+.poster--ink-bg .poster__type {
+  color: var(--ink-black);
+}
+
+.poster--black-bg .poster__ink {
+  background: var(--ink-black);
+}
+.poster--black-bg.poster--tomato .poster__type {
+  color: var(--ink-tomato);
+}
+.poster--black-bg.poster--mustard .poster__type {
+  color: var(--ink-mustard);
+}
+.poster--black-bg.poster--teal .poster__type {
+  color: var(--ink-teal);
+}
+
+.poster__type {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  padding: clamp(14px, 3.2%, 34px);
+  display: flex;
+  flex-direction: column;
+}
+
+.poster--black-bg .poster__type {
+  transform: translate(var(--misreg-x), var(--misreg-y));
+}
+
+.poster__msgbox {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+}
+
+/* once a stamp has landed on it, the message gives up the lower third */
+.poster--stamped .poster__msgbox {
+  align-items: flex-start;
+  flex: 0 0 auto;
+  height: 54%;
+}
+
+.poster--stamped.poster--md .poster__msgbox {
+  height: 40%;
+}
+
+.poster--stamped.poster--sm .poster__msgbox {
+  height: 56%;
+}
+
+.poster__message {
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 0.94;
+  letter-spacing: -0.005em;
+  margin: 0;
+  width: 100%;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+}
+
+.poster__message[data-variant="short"] {
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+}
+
+.poster--has-image .poster__msgbox {
+  padding-right: clamp(56px, 12%, 116px);
+}
+
+.poster__adline {
+  margin: 0 0 var(--s2);
+  font-family: var(--font-mono);
+  font-style: italic;
+  font-size: clamp(9px, 1.05vw, 14px);
+  line-height: 1.25;
+  opacity: 0.88;
+}
+
+.poster__credit {
+  margin-top: auto;
+  font-family: var(--font-mono);
+  font-size: clamp(8px, 0.85vw, 13px);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  opacity: 0.9;
+}
+
+.poster__image {
+  position: absolute;
+  top: clamp(14px, 3.2%, 34px);
+  right: clamp(14px, 3.2%, 34px);
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+  border: 1px solid var(--ink-black);
+  background: var(--paper);
+  z-index: 3;
+}
+
+/* small posters (strip, hall) */
+.poster--md {
+  aspect-ratio: 5 / 4;
+}
+.poster--md .poster__type {
+  padding: 16px;
+}
+.poster--md .poster__credit {
+  font-size: 10px;
+}
+
+.poster--sm .poster__type {
+  padding: 10px;
+}
+.poster--sm .poster__adline {
+  display: none;
+}
+.poster--sm .poster__image {
+  width: 34px;
+  height: 34px;
+  top: 8px;
+  right: 8px;
+}
+.poster--sm .poster__credit {
+  font-size: 8px;
+  letter-spacing: 0.1em;
+}
+
+/* -------------------------------------------------------------- the stamp */
+.stamp {
+  position: absolute;
+  left: 10%;
+  top: 64%;
+  width: min(76%, 560px);
+  transform: rotate(-8deg);
+  color: var(--ink-tomato);
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  pointer-events: none;
+  z-index: 4;
+  opacity: 0.96;
+}
+
+.stamp--teal {
+  color: var(--ink-teal);
+}
+.stamp--black {
+  color: var(--ink-black);
+}
+.stamp--cream {
+  color: var(--paper);
+}
+
+.stamp__box {
+  position: relative;
+  border: 3px solid currentColor;
+  padding: 9px 11px;
+}
+
+.stamp__box::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border: 1px solid currentColor;
+}
+
+.stamp__l1 {
+  font-size: clamp(8px, 1.05vw, 13px);
+  font-weight: 700;
+  opacity: 0.95;
+}
+
+.stamp__l2 {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid currentColor;
+  font-size: clamp(8px, 1vw, 13px);
+  line-height: 1.45;
+  opacity: 0.92;
+}
+
+/* uneven ink: hard-edged opacity bands, no blur, no noise image */
+/* uneven ink: hard-edged opacity bands, no blur, no noise image */
+@supports (mask-image: repeating-linear-gradient(#000, #000)) {
+  .stamp__box {
+    -webkit-mask-image: repeating-linear-gradient(
+      178deg,
+      rgba(0, 0, 0, 1) 0px,
+      rgba(0, 0, 0, 1) 7px,
+      rgba(0, 0, 0, 0.86) 7px,
+      rgba(0, 0, 0, 0.86) 8px,
+      rgba(0, 0, 0, 1) 8px,
+      rgba(0, 0, 0, 1) 17px,
+      rgba(0, 0, 0, 0.92) 17px,
+      rgba(0, 0, 0, 0.92) 18px
+    );
+    mask-image: repeating-linear-gradient(
+      178deg,
+      rgba(0, 0, 0, 1) 0px,
+      rgba(0, 0, 0, 1) 7px,
+      rgba(0, 0, 0, 0.86) 7px,
+      rgba(0, 0, 0, 0.86) 8px,
+      rgba(0, 0, 0, 1) 8px,
+      rgba(0, 0, 0, 1) 17px,
+      rgba(0, 0, 0, 0.92) 17px,
+      rgba(0, 0, 0, 0.92) 18px
+    );
+  }
+}
+
+.stamp--sm {
+  left: 6%;
+  top: 58%;
+  width: 84%;
+}
+.stamp--sm .stamp__box {
+  border-width: 2px;
+  padding: 4px 5px;
+}
+.stamp--sm .stamp__box::before {
+  inset: 2px;
+}
+.stamp--sm .stamp__l1 {
+  font-size: 7px;
+  letter-spacing: 0.06em;
+}
+.stamp--sm .stamp__l2 {
+  display: none;
+}
+
+.stamp--md {
+  left: 7%;
+  top: 52%;
+  width: 82%;
+}
+.stamp--md .stamp__box {
+  border-width: 2px;
+  padding: 6px 7px;
+}
+.stamp--md .stamp__box::before {
+  inset: 3px;
+}
+.stamp--md .stamp__l1 {
+  font-size: 8px;
+  letter-spacing: 0.06em;
+}
+.stamp--md .stamp__l2 {
+  font-size: 8px;
+  margin-top: 4px;
+  padding-top: 4px;
+  letter-spacing: 0.04em;
+}
+
+/* ------------------------------------------------------------- paste-up wall */
+.wall {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--s6) var(--s4);
+  min-height: calc(100vh - var(--rail-h) - 44px);
+}
+
+.stack {
+  position: relative;
+  width: min(65vw, 1080px);
+  max-width: 100%;
+}
+
+.stack__layer {
+  position: absolute;
+  inset: 0;
+}
+
+.stack__layer--1 {
+  transform: translate(-2.4%, 3.2%);
+  z-index: 3;
+}
+.stack__layer--2 {
+  transform: translate(3.2%, -3.4%);
+  z-index: 2;
+}
+.stack__layer--3 {
+  transform: translate(-4.6%, -4.8%);
+  z-index: 1;
+}
+
+/* the poster being pasted over hangs out below just long enough to be stamped */
+.stack__layer--covering {
+  transform: translate(-3.5%, 41%);
+  z-index: 2;
+}
+
+.stack__layer .poster {
+  border-width: 2px;
+}
+
+.poster--torn {
+  clip-path: var(--tear, var(--tear-a));
+}
+
+.stack__top {
+  position: relative;
+  z-index: 3;
+}
+
+/* ------------------------------------------------------------------- the rail */
+.rail {
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
+  background: var(--ink-black);
+  color: var(--paper);
+  min-height: var(--rail-h);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: var(--s3);
+  padding: 0 var(--s4);
+  font-family: var(--font-mono);
+  font-size: var(--mono);
+  border-top: 4px solid var(--rail-ink, var(--ink-tomato));
+}
+
+.rail__left {
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.rail__seg {
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  font-size: var(--mono-sm);
+}
+
+.rail__dot {
+  opacity: 0.5;
+}
+
+.rail__cta {
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  font-size: var(--mono-sm);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  color: var(--paper);
+}
+
+.rail__cta:hover,
+.rail__cta:focus-visible {
+  text-decoration-thickness: 3px;
+}
+
+.rail__cta:disabled {
+  text-decoration: none;
+  opacity: 0.55;
+}
+
+.rail__price {
+  color: var(--rail-ink, var(--ink-tomato));
+  font-weight: 700;
+}
+
+.rail__right {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  font-size: var(--mono-sm);
+  letter-spacing: 0.06em;
+  text-align: right;
+}
+
+.rail__pending {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--paper);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: var(--mono-sm);
+  border: 1px dashed var(--paper);
+  padding: 3px 7px;
+  opacity: 0.9;
+}
+
+.rail__frozen {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: var(--mono-sm);
+}
+
+@media (max-width: 700px) {
+  .rail__right {
+    font-size: var(--mono-xs);
+  }
+  .rail {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 0 var(--s3);
+    gap: var(--s2);
+  }
+  .rail__hideable {
+    display: none;
+  }
+  .wall {
+    padding: var(--s4) var(--s3) calc(var(--rail-h) + var(--s5));
+    min-height: auto;
+  }
+  .stack {
+    width: 100%;
+  }
+  .poster {
+    aspect-ratio: 7 / 5;
+  }
+  .page {
+    padding-bottom: calc(var(--rail-h) + var(--s5));
+  }
+}
+
+/* --------------------------------------------------------------- poster strip */
+.strip {
+  border-top: 2px solid var(--ink-black);
+  padding: var(--s5) 0 var(--s6);
+}
+
+.strip__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s4);
+  padding: 0 var(--s4) var(--s4);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: var(--mono-xs);
+}
+
+.strip__scroll {
+  display: flex;
+  gap: var(--s5);
+  overflow-x: auto;
+  padding: var(--s3) var(--s4) var(--s5);
+  scrollbar-width: thin;
+}
+
+.strip__item {
+  flex: 0 0 auto;
+  width: 210px;
+  text-decoration: none;
+}
+
+.strip__item .poster {
+  border-width: 2px;
+}
+
+.strip__caption {
+  margin-top: var(--s3);
+  font-size: var(--mono-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s2);
+}
+
+/* ----------------------------------------------------------------- pages */
+.page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: var(--s6) var(--s4) var(--s7);
+}
+
+.page--wide {
+  max-width: none;
+}
+
+.page__title {
+  font-family: var(--font-display);
+  font-size: clamp(30px, 6vw, 62px);
+  line-height: 0.92;
+  margin: 0 0 var(--s3);
+  text-transform: uppercase;
+}
+
+.page__sub {
+  font-size: var(--mono-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin: 0 0 var(--s6);
+  opacity: 0.8;
+}
+
+.rule {
+  border: 0;
+  border-top: 2px solid var(--ink-black);
+  margin: var(--s5) 0;
+}
+
+/* ------------------------------------------------------------- print-shop form */
+.sheet {
+  border: 2px solid var(--ink-black);
+}
+
+.sheet__hd {
+  border-bottom: 2px solid var(--ink-black);
+  padding: var(--s3) var(--s4);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: var(--mono-xs);
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s3);
+  flex-wrap: wrap;
+}
+
+.field {
+  border-bottom: 1px solid var(--ink-black);
+  padding: var(--s3) var(--s4) var(--s4);
+}
+
+.field:last-of-type {
+  border-bottom: 0;
+}
+
+.field__label {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s3);
+  font-size: var(--mono-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  margin-bottom: var(--s2);
+}
+
+.field__hint {
+  opacity: 0.6;
+  text-transform: none;
+  letter-spacing: 0.04em;
+}
+
+.field input,
+.field textarea {
+  width: 100%;
+  border: 2px solid var(--ink-black);
+  background: transparent;
+  color: var(--ink-black);
+  padding: 10px;
+  font-size: var(--mono);
+  line-height: 1.35;
+}
+
+.field textarea {
+  min-height: 84px;
+  resize: vertical;
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+  color: rgba(20, 20, 20, 0.5);
+}
+
+.field--amount {
+  display: flex;
+  gap: var(--s4);
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.grow {
+  flex: 1 1 220px;
+}
+
+.sheet__error {
+  margin: 0;
+  padding: var(--s3) var(--s4);
+  border-top: 1px solid var(--ink-black);
+  background: var(--ink-tomato);
+  color: var(--ink-black);
+  font-size: var(--mono-sm);
+  letter-spacing: 0.02em;
+}
+
+.sheet__foot {
+  border-top: 2px solid var(--ink-black);
+  padding: var(--s4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s4);
+  flex-wrap: wrap;
+}
+
+.btn {
+  border: 2px solid var(--ink-black);
+  background: var(--ink-black);
+  color: var(--paper);
+  padding: 12px 18px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: var(--mono-sm);
+}
+
+.btn:active:not(:disabled) {
+  transform: translate(1px, 1px);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--ink-black);
+}
+
+.btn--sm {
+  padding: 6px 10px;
+  font-size: var(--mono-xs);
+  letter-spacing: 0.1em;
+  border-width: 1px;
+}
+
+.counter {
+  font-variant-numeric: tabular-nums;
+  opacity: 0.7;
+}
+
+/* --------------------------------------------------------------- hall of fallen */
+.fallen__controls {
+  display: flex;
+  gap: var(--s5);
+  flex-wrap: wrap;
+  align-items: center;
+  border-top: 2px solid var(--ink-black);
+  border-bottom: 2px solid var(--ink-black);
+  padding: var(--s3) var(--s4);
+  margin-bottom: var(--s5);
+  font-size: var(--mono-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.toggle {
+  border: 1px solid var(--ink-black);
+  padding: 5px 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: var(--mono-xs);
+}
+
+.toggle[aria-pressed="true"] {
+  background: var(--ink-black);
+  color: var(--paper);
+}
+
+.masonry {
+  column-count: 1;
+  column-gap: var(--s5);
+  padding: 0 var(--s4);
+}
+
+@media (min-width: 620px) {
+  .masonry {
+    column-count: 2;
+  }
+}
+@media (min-width: 980px) {
+  .masonry {
+    column-count: 3;
+  }
+}
+@media (min-width: 1400px) {
+  .masonry {
+    column-count: 4;
+  }
+}
+
+.masonry__item {
+  break-inside: avoid;
+  position: relative;
+  margin-bottom: -14px;
+  padding-bottom: var(--s5);
+  text-decoration: none;
+  display: block;
+}
+
+.masonry__item .poster {
+  transform: rotate(var(--rot, 0deg)) translateX(var(--tx, 0));
+}
+
+.masonry__obit {
+  margin: var(--s3) 0 0;
+  font-size: var(--mono-xs);
+  font-style: italic;
+  line-height: 1.35;
+  max-width: 46ch;
+}
+
+.masonry__meta {
+  margin-top: var(--s2);
+  font-size: var(--mono-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.7;
+}
+
+/* ------------------------------------------------------------------- admin */
+.admin {
+  font-family: var(--font-mono);
+}
+
+.admin h2 {
+  font-family: var(--font-mono);
+  font-size: var(--mono-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  margin: var(--s6) 0 var(--s3);
+  border-bottom: 1px solid var(--ink-black);
+  padding-bottom: var(--s2);
+}
+
+.admin table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--mono-xs);
+}
+
+.admin th,
+.admin td {
+  border: 1px solid var(--ink-black);
+  padding: 6px 8px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.admin th {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 400;
+  background: var(--ink-black);
+  color: var(--paper);
+}
+
+.admin__row {
+  display: flex;
+  gap: var(--s3);
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: var(--s3);
+}
+
+.admin__pre {
+  border: 2px solid var(--ink-black);
+  padding: var(--s4);
+  white-space: pre-wrap;
+  font-size: var(--mono-sm);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.admin__note {
+  font-size: var(--mono-xs);
+  opacity: 0.7;
+}
+
+.tag {
+  border: 1px solid var(--ink-black);
+  padding: 1px 5px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.tag--live {
+  background: var(--ink-teal);
+  color: var(--paper);
+  border-color: var(--ink-teal);
+}
+.tag--wait {
+  background: var(--ink-mustard);
+}
+.tag--dead {
+  opacity: 0.6;
+}
+
+/* --------------------------------------------------------------- the transition */
+@keyframes posterDrop {
+  0% {
+    transform: translateY(-115vh) rotate(var(--rot, 0deg));
+  }
+  70% {
+    transform: translateY(0) rotate(var(--rot, 0deg));
+  }
+  78% {
+    transform: translateY(9px) rotate(var(--rot, 0deg));
+  }
+  100% {
+    transform: translateY(0) rotate(var(--rot, 0deg));
+  }
+}
+
+@keyframes stampSlam {
+  0% {
+    transform: translateY(-16px) rotate(-8deg) scale(1.03);
+    opacity: 0;
+  }
+  55% {
+    transform: translateY(0) rotate(-8deg) scale(1);
+    opacity: 0.93;
+  }
+  75% {
+    transform: translateY(2px) rotate(-8deg) scale(0.996);
+    opacity: 0.93;
+  }
+  100% {
+    transform: translateY(0) rotate(-8deg) scale(1);
+    opacity: 0.93;
+  }
+}
+
+@keyframes tearFrames {
+  0% {
+    clip-path: var(--tear-f1);
+  }
+  33% {
+    clip-path: var(--tear-f2);
+  }
+  66% {
+    clip-path: var(--tear-f3);
+  }
+  100% {
+    clip-path: var(--tear-f4);
+  }
+}
+
+.poster--enter {
+  animation: posterDrop 0.8s cubic-bezier(0.2, 0.86, 0.2, 1) both;
+}
+
+.poster--covered {
+  animation: tearFrames 0.24s steps(1, end) both;
+  animation-delay: 1.1s;
+}
+
+.stamp--slam {
+  animation: stampSlam 0.3s steps(4, end) both;
+  animation-delay: 1.12s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .poster--enter,
+  .poster--covered,
+  .stamp--slam {
+    animation: none !important;
+  }
+}
+
+/* ---------------------------------------------------------------- misc states */
+.loading {
+  padding: var(--s7) var(--s4);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: var(--mono-sm);
+}
+
+.frozen-note {
+  border: 2px solid var(--ink-black);
+  padding: var(--s4);
+  margin: 0 var(--s4) var(--s5);
+  font-size: var(--mono-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.copyline {
+  display: flex;
+  gap: var(--s3);
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: var(--mono-xs);
+}
+
+.copyline code {
+  border: 1px solid var(--ink-black);
+  padding: 5px 8px;
+  font-family: var(--font-mono);
+  word-break: break-all;
+}
