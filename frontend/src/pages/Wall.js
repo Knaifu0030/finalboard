@@ -4,6 +4,8 @@ import Notice from "@/components/Notice";
 import PosterStack from "@/components/PosterStack";
 import Rail from "@/components/Rail";
 import Strip from "@/components/Strip";
+import SideTake from "@/components/SideTake";
+import Chatter from "@/components/Chatter";
 import { getWall, errText } from "@/lib/api";
 import { heldClock, countdown } from "@/lib/format";
 
@@ -105,9 +107,23 @@ export default function Wall() {
   const held = cur ? heldClock(cur.started_at, null, skew.current) : "00:00";
   const cd = countdown(data.clock.ends_at, skew.current);
 
+  const goTake = () => {
+    sessionStorage.setItem("lb_expect", JSON.stringify({ prev: cur?.id || null }));
+    navigate("/take");
+  };
+
   return (
     <>
       <Notice takeovers={data.takeovers} totalLabel={data.total_paid_label} />
+
+      <SideTake
+        nextLabel={data.price.next_label}
+        pending={data.pending}
+        frozen={frozen}
+        onTakeover={goTake}
+      />
+
+      <Chatter />
 
       <main className="wall" data-testid="the-wall">
         {cur ? (
@@ -145,10 +161,7 @@ export default function Wall() {
         paused={data.clock.paused}
         pending={data.pending}
         holderName={cur?.name}
-        onTakeover={() => {
-          sessionStorage.setItem("lb_expect", JSON.stringify({ prev: cur?.id || null }));
-          navigate("/take");
-        }}
+        onTakeover={goTake}
       />
 
       {frozen ? (

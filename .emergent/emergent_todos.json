@@ -1,46 +1,34 @@
 [
   {
-    "content": "Get Razorpay integration playbook",
+    "content": "Change admin password to Kaneki1# in backend/.env and restart backend",
     "status": "completed"
   },
   {
-    "content": "Get Anthropic (Emergent LLM key) playbook",
+    "content": "Add backend chat endpoints (GET/POST /api/chat) with AI moderation + index",
     "status": "completed"
   },
   {
-    "content": "Phase 1: Write /app/test_core.py covering Razorpay order+verify, moderation, AI voice JSON, OG card render, atomic price ladder",
+    "content": "Add getChat/postChat to frontend lib/api.js",
     "status": "completed"
   },
   {
-    "content": "Phase 1: Run POC and fix until all green + og_test.png correct (64/64)",
+    "content": "Build prominent side 'Paste over it' CTA button component",
     "status": "completed"
   },
   {
-    "content": "Phase 2: design_agent fly-poster implementation blueprint",
+    "content": "Build live Chatter side panel component (poll, post, moderated)",
     "status": "completed"
   },
   {
-    "content": "Phase 2: Backend implementation (wall state, geo currency, takeover/pending/webhook, OG endpoint, admin, freeze, seed)",
+    "content": "Add CSS for side CTA + chatter (fly-poster style) in index.css",
     "status": "completed"
   },
   {
-    "content": "Phase 2: Frontend implementation (/, /take, /m/:id, /fallen, /admin) with paste-up + stamp + transition",
+    "content": "Wire SideTake + Chatter into Wall.js",
     "status": "completed"
   },
   {
-    "content": "Phase 2: All user stories covered in development",
+    "content": "Test backend chat + frontend UI (esbuild + screenshot + testing agent)",
     "status": "completed"
-  },
-  {
-    "content": "Phase 2: End to End Testing using Testing Agent",
-    "status": "in_progress"
-  },
-  {
-    "content": "Phase 2: Fix all issues found by testing agent",
-    "status": "pending"
-  },
-  {
-    "content": "Phase 2: Reset DB and re-seed the clean 3-poster launch fight",
-    "status": "pending"
   }
 ]

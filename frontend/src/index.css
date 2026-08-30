@@ -1116,3 +1116,279 @@ select {
   font-family: var(--font-mono);
   word-break: break-all;
 }
+
+/* --------------------------------------------------- prominent side takeover */
+.side-take,
+.side-take--pending {
+  position: fixed;
+  left: var(--s5);
+  top: 50%;
+  transform: translateY(-50%) rotate(-2deg);
+  z-index: 15;
+  width: 172px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: var(--s4);
+  text-align: left;
+  border: 3px solid var(--ink-black);
+  background: var(--ink-tomato);
+  color: var(--ink-black);
+  box-shadow: var(--poster-shadow);
+  font-family: var(--font-mono);
+}
+
+.side-take {
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.side-take:hover {
+  transform: translateY(-50%) rotate(-2deg) translate(-2px, -2px);
+  box-shadow: 9px 9px 0 var(--ink-black);
+}
+
+.side-take:focus-visible {
+  outline: 2px solid var(--ink-black);
+  outline-offset: 5px;
+}
+
+.side-take:active {
+  transform: translateY(-50%) rotate(-2deg) translate(2px, 2px);
+  box-shadow: 3px 3px 0 var(--ink-black);
+}
+
+.side-take__kicker {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: var(--mono-xs);
+}
+
+.side-take__price {
+  font-family: var(--font-display);
+  font-size: clamp(30px, 3vw, 46px);
+  line-height: 0.9;
+  letter-spacing: -0.01em;
+}
+
+.side-take__sub {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: var(--mono-xs);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.side-take--pending {
+  background: var(--ink-mustard);
+  cursor: default;
+}
+
+.side-take--pending .side-take__price {
+  font-size: clamp(22px, 2vw, 30px);
+}
+
+/* ------------------------------------------------------------ chatter (side) */
+.chatter {
+  position: fixed;
+  top: 44px;
+  right: 0;
+  bottom: var(--rail-h);
+  width: 340px;
+  z-index: 18;
+  background: var(--paper);
+  border-left: 2px solid var(--ink-black);
+  display: flex;
+  flex-direction: column;
+}
+
+.chatter__hd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s3);
+  padding: var(--s3) var(--s4);
+  border-bottom: 2px solid var(--ink-black);
+  background: var(--ink-black);
+  color: var(--paper);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: var(--mono-xs);
+}
+
+.chatter__title {
+  font-weight: 700;
+}
+
+.chatter__live {
+  color: var(--ink-mustard);
+  margin-left: 4px;
+  letter-spacing: 0.16em;
+}
+
+.chatter__close {
+  color: var(--paper);
+  font-size: 20px;
+  line-height: 1;
+  padding: 0 4px;
+}
+
+.chatter__close:hover,
+.chatter__close:focus-visible {
+  color: var(--ink-mustard);
+}
+
+.chatter__log {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: var(--s4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s3);
+  scrollbar-width: thin;
+}
+
+.chatter__empty {
+  margin: 0;
+  opacity: 0.6;
+  font-style: italic;
+  font-size: var(--mono-sm);
+}
+
+.chatter__line {
+  margin: 0;
+  font-size: var(--mono-sm);
+  line-height: 1.4;
+}
+
+.chatter__name {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  color: var(--ink-teal);
+}
+
+.chatter__dot {
+  opacity: 0.45;
+  margin: 0 6px;
+}
+
+.chatter__text {
+  overflow-wrap: anywhere;
+}
+
+.chatter__note {
+  margin: 0;
+  padding: var(--s2) var(--s4);
+  border-top: 1px solid var(--ink-black);
+  background: var(--ink-tomato);
+  color: var(--ink-black);
+  font-size: var(--mono-xs);
+}
+
+.chatter__form {
+  border-top: 2px solid var(--ink-black);
+  padding: var(--s3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s2);
+}
+
+.chatter__name-in,
+.chatter__text-in {
+  border: 2px solid var(--ink-black);
+  background: transparent;
+  color: var(--ink-black);
+  padding: 8px;
+  font-family: var(--font-mono);
+  font-size: var(--mono-sm);
+}
+
+.chatter__name-in::placeholder,
+.chatter__text-in::placeholder {
+  color: rgba(20, 20, 20, 0.5);
+}
+
+.chatter__row {
+  display: flex;
+  gap: var(--s2);
+}
+
+.chatter__text-in {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.chatter__send {
+  border: 2px solid var(--ink-black);
+  background: var(--ink-black);
+  color: var(--paper);
+  padding: 8px 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: var(--mono-xs);
+}
+
+.chatter__send:active:not(:disabled) {
+  transform: translate(1px, 1px);
+}
+
+.chatter__send:disabled {
+  opacity: 0.45;
+}
+
+/* the closed tab that summons the chatter */
+.chatter-tab {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 18;
+  writing-mode: vertical-rl;
+  background: var(--ink-black);
+  color: var(--paper);
+  border: 2px solid var(--ink-black);
+  border-right: 0;
+  padding: var(--s4) 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: var(--mono-xs);
+}
+
+.chatter-tab:hover,
+.chatter-tab:focus-visible {
+  background: var(--ink-teal);
+}
+
+/* wide: shrink the paste-up so both margins hold a side element, dock the chatter */
+@media (min-width: 1280px) {
+  .stack {
+    width: min(50vw, 900px);
+  }
+  .chatter {
+    width: 316px;
+  }
+  .strip {
+    padding-right: 332px;
+  }
+}
+
+/* below the dock width: the side button hides (the rail keeps the price),
+   and the chatter behaves as an on-demand drawer over the wall */
+@media (max-width: 1279px) {
+  .side-take,
+  .side-take--pending {
+    display: none;
+  }
+  .chatter {
+    z-index: 40;
+  }
+}
+
+@media (max-width: 640px) {
+  .chatter {
+    top: 0;
+    bottom: 0;
+    width: 100%;
+  }
+}

@@ -183,3 +183,26 @@ overlay over the wall.
 bundle → overlay still shown, so real bugs are not hidden. Zero console/page errors and zero
 failed `/api/*` requests across `/`, `/take`, `/fallen`, `/admin`, `/m/:id` and the 404 fallback.
 Currency detection confirmed (Asia/Kolkata → ₹, America/New_York → $).
+
+---
+
+## Phase 4 — Session 2 requests (Status: ✅ COMPLETE, verified iteration_4)
+
+User asked for three things:
+
+1. **Admin password change** → `ADMIN_PASSWORD=Kaneki1#` in `backend/.env`. Old password now
+   rejected; new one accepted. (No code change — env only.)
+2. **Prominent side takeover button** → new `components/SideTake.js`, a big fly-poster button
+   pinned to the left margin (ink-tomato ground, black keyline, hard shadow, Archivo Black price).
+   Reflects live state: clickable price, PENDING (mustard), or hidden when frozen. Shares the same
+   `goTake()` handler as the rail. Visible on wide screens (≥1280px); below that the rail keeps the
+   CTA so nothing is lost.
+3. **Moderated live chat** → new `components/Chatter.js` side panel + backend `GET/POST /api/chat`.
+   Every posted line runs through the existing `ai.moderate` gate (wordlist + Claude); abusive
+   lines are rejected (422) and never stored. Panel polls every 4s, docks open on wide screens,
+   collapses to a reopen tab / full-screen drawer on smaller screens. New `chat` Mongo collection
+   with a `created_at` index.
+
+Layout note: on ≥1280px the paste-up stack narrows to `min(50vw,900px)` so both margins hold a side
+element without touching the poster; strip gets right padding to clear the docked chatter. Art
+direction untouched (no radius, no gradients, two typefaces, single poster shadow).

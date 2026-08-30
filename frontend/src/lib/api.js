@@ -42,5 +42,10 @@ export const adminPost = (pw, path, body) =>
 export const errText = (e, fallback) =>
   e?.response?.data?.detail || e?.message || fallback || "The wall is not answering.";
 
+export const getChat = () => client.get("/chat").then((r) => r.data);
+
+export const postChat = (payload) =>
+  client.post("/chat", payload).then((r) => r.data);
+
 export const ogUrl = (id) => `${API}/og/${id}.png`;
 export const shareUrl = (id) => `${API}/m/${id}`;

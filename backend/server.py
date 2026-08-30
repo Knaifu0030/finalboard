@@ -172,6 +172,11 @@ class AdminIn(BaseModel):
     password: str
 
 
+class ChatIn(BaseModel):
+    name: str = Field(default="", max_length=24)
+    text: str = Field(min_length=1, max_length=140)
+
+
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
 
@@ -319,6 +324,49 @@ async def do_moderate(body: ModerateIn):
     res = await ai.moderate(body.text, body.name, body.image_url)
     return {"allow": res["allow"], "copy": None if res["allow"] else BLOCK_COPY,
             "stage": res["stage"]}
+
+
+# --------------------------------------------------------------- live chat
+CHAT_BLOCK_COPY = "Not on this wall. " + BLOCK_COPY
+
+
+def chat_public(m: dict) -> dict:
+    return {
+        "id": m["id"],
+        "name": m.get("name") or "anon",
+        "text": m.get("text") or "",
+        "at": wall.iso(m.get("created_at")),
+    }
+
+
+@api.get("/chat")
+async def get_chat(limit: int = Query(60, le=120)):
+    db = get_db()
+    rows = [chat_public(m) async for m in
+            db.chat.find({"hidden": {"$ne": True}}).sort("created_at", -1).limit(limit)]
+    rows.reverse()
+    return {"messages": rows, "count": len(rows)}
+
+
+@api.post("/chat")
+async def post_chat(body: ChatIn, request: Request):
+    db = get_db()
+    text = body.text.strip()
+    if not text:
+        raise HTTPException(400, "Say something. Nobody is listening, but say it anyway.")
+    name = (body.name or "").strip()[:24] or "anon"
+    mod = await ai.moderate(text, name)
+    if not mod["allow"]:
+        raise HTTPException(422, CHAT_BLOCK_COPY)
+    doc = {
+        "id": uuid.uuid4().hex[:12],
+        "name": name,
+        "text": text[:140],
+        "created_at": datetime.now(timezone.utc),
+        "hidden": False,
+    }
+    await db.chat.insert_one(dict(doc))
+    return chat_public(doc)
 
 
 @api.post("/create-order")
@@ -711,6 +759,7 @@ async def startup():
     await db.messages.create_index("seq")
     await db.pending.create_index("id")
     await db.pending.create_index("razorpay_order_id")
+    await db.chat.create_index("created_at")
     asyncio.create_task(seed_wall())
     asyncio.create_task(expiry_loop())
     log.info("the wall is up")

@@ -10,7 +10,8 @@ import time
 from datetime import datetime
 
 BASE_URL = "https://final-billboard.preview.emergentagent.com/api"
-ADMIN_PASSWORD = "paste-over-it"
+ADMIN_PASSWORD = "Kaneki1#"
+OLD_ADMIN_PASSWORD = "paste-over-it"
 
 # From backend/.env
 RAZORPAY_KEY_SECRET = "gSUL8WXzLx7yCyJYeV6YhCMT"
@@ -548,6 +549,16 @@ def test_user_story_10_admin(t):
     """USER STORY 10: Admin endpoints"""
     print("\n[USER STORY 10] Admin endpoints")
     
+    # Test admin login with OLD password (should fail)
+    try:
+        r = requests.post(f"{BASE_URL}/admin/login", json={
+            "password": OLD_ADMIN_PASSWORD
+        }, timeout=10)
+        
+        t.test("OLD admin password 'paste-over-it' returns 401", r.status_code == 401, f"Got {r.status_code}")
+    except Exception as e:
+        t.test("OLD admin password test", False, str(e))
+    
     # Test admin login with wrong password
     try:
         r = requests.post(f"{BASE_URL}/admin/login", json={
@@ -558,15 +569,19 @@ def test_user_story_10_admin(t):
     except Exception as e:
         t.test("Wrong admin password test", False, str(e))
     
-    # Test admin login with correct password
+    # Test admin login with NEW correct password
     try:
         r = requests.post(f"{BASE_URL}/admin/login", json={
             "password": ADMIN_PASSWORD
         }, timeout=10)
         
-        t.test("Correct admin password returns 200", r.status_code == 200, f"Got {r.status_code}")
+        t.test("NEW admin password 'Kaneki1#' returns 200", r.status_code == 200, f"Got {r.status_code}")
+        
+        if r.status_code == 200:
+            data = r.json()
+            t.test("Admin login response has ok=true", data.get("ok") == True)
     except Exception as e:
-        t.test("Correct admin password test", False, str(e))
+        t.test("NEW admin password test", False, str(e))
     
     # Test admin state endpoint
     try:
@@ -770,6 +785,119 @@ def test_user_story_11_frozen_state(t):
             pass
 
 
+def test_chat_endpoints(t):
+    """NEW SESSION: Chat endpoints with moderation"""
+    print("\n[CHAT] Chat endpoints")
+    
+    # Test GET /api/chat
+    try:
+        r = requests.get(f"{BASE_URL}/chat", timeout=10)
+        t.test("GET /api/chat returns 200", r.status_code == 200, f"Got {r.status_code}")
+        
+        if r.status_code == 200:
+            data = r.json()
+            t.test("Chat response has 'messages' field", "messages" in data)
+            t.test("Chat response has 'count' field", "count" in data)
+            
+            if "messages" in data:
+                t.test("Messages is an array", isinstance(data["messages"], list))
+                
+                # Check message structure if any exist
+                if len(data["messages"]) > 0:
+                    msg = data["messages"][0]
+                    t.test("Message has 'id' field", "id" in msg)
+                    t.test("Message has 'name' field", "name" in msg)
+                    t.test("Message has 'text' field", "text" in msg)
+                    t.test("Message has 'at' field", "at" in msg)
+    except Exception as e:
+        t.test("GET /api/chat test", False, str(e))
+    
+    # Test POST /api/chat with clean message
+    try:
+        clean_msg = f"this wall rules {int(time.time())}"
+        r = requests.post(f"{BASE_URL}/chat", json={
+            "name": "sam",
+            "text": clean_msg
+        }, timeout=15)
+        
+        t.test("POST /api/chat with clean message returns 200", r.status_code == 200, f"Got {r.status_code}")
+        
+        if r.status_code == 200:
+            data = r.json()
+            t.test("Posted message has 'id' field", "id" in data)
+            t.test("Posted message has 'name' field", "name" in data)
+            t.test("Posted message has 'text' field", "text" in data)
+            t.test("Posted message has 'at' field", "at" in data)
+            t.test("Posted message name is 'sam'", data.get("name") == "sam", f"Got: {data.get('name')}")
+            t.test("Posted message text matches", data.get("text") == clean_msg, f"Got: {data.get('text')}")
+            
+            # Verify message appears in GET /api/chat
+            time.sleep(1)
+            r2 = requests.get(f"{BASE_URL}/chat", timeout=10)
+            if r2.status_code == 200:
+                messages = r2.json().get("messages", [])
+                found = any(m.get("text") == clean_msg for m in messages)
+                t.test("Posted message appears in GET /api/chat", found)
+    except Exception as e:
+        t.test("POST /api/chat clean message test", False, str(e))
+    
+    # Test POST /api/chat with abusive message (should be blocked)
+    try:
+        r = requests.post(f"{BASE_URL}/chat", json={
+            "name": "baduser",
+            "text": "kill yourself"
+        }, timeout=15)
+        
+        t.test("POST /api/chat with abusive message returns 422", r.status_code == 422, f"Got {r.status_code}")
+        
+        if r.status_code == 422:
+            detail = r.json().get("detail", "")
+            expected_msg = "Not on this wall. The wall has standards. Barely, but it has them."
+            t.test(
+                "Abusive message error is correct",
+                detail == expected_msg,
+                f"Got: {detail}"
+            )
+            
+            # Verify message does NOT appear in GET /api/chat
+            time.sleep(1)
+            r2 = requests.get(f"{BASE_URL}/chat", timeout=10)
+            if r2.status_code == 200:
+                messages = r2.json().get("messages", [])
+                found = any("kill yourself" in m.get("text", "") for m in messages)
+                t.test("Abusive message NOT in GET /api/chat", not found)
+    except Exception as e:
+        t.test("POST /api/chat abusive message test", False, str(e))
+    
+    # Test POST /api/chat with empty text (should return 400)
+    try:
+        r = requests.post(f"{BASE_URL}/chat", json={
+            "name": "tester",
+            "text": ""
+        }, timeout=10)
+        
+        t.test("POST /api/chat with empty text returns 400", r.status_code == 400, f"Got {r.status_code}")
+    except Exception as e:
+        t.test("POST /api/chat empty text test", False, str(e))
+    
+    # Test POST /api/chat with text over 140 chars (should be truncated)
+    try:
+        long_text = "a" * 150
+        r = requests.post(f"{BASE_URL}/chat", json={
+            "name": "tester",
+            "text": long_text
+        }, timeout=15)
+        
+        # Should either return 200 with truncated text or 422 if validation rejects
+        if r.status_code == 200:
+            data = r.json()
+            t.test("Long text is truncated to 140 chars", len(data.get("text", "")) <= 140, f"Got length: {len(data.get('text', ''))}")
+        else:
+            t.test("Long text returns error or truncates", r.status_code in [200, 400, 422], f"Got {r.status_code}")
+    except Exception as e:
+        t.test("POST /api/chat long text test", False, str(e))
+
+
 def main():
     print("="*70)
     print("THE LAST BILLBOARD - BACKEND API TESTS")
@@ -788,7 +916,8 @@ def main():
     
     test_user_story_9_messages_endpoint(t)
     test_user_story_10_admin(t)
-    test_user_story_11_frozen_state(t)
+    test_chat_endpoints(t)
+    # test_user_story_11_frozen_state(t)  # Commented out to avoid disrupting the wall
     
     # Summary
     success = t.summary()
